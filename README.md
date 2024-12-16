@@ -19,6 +19,18 @@ El valor de nuestras etiquetas pertenece a un conjunto continuo. Se pueden obten
 Para manejar toda esta información existen diferentes forma de validar la data en JavaScript. Una es teniendo un arreglo de objetos con todos los datos para poder iterar y validar la información. Otra forma es teniendo arreglos dentro de otros arreglos, donde cada uno de los arreglos internos va a representar cada uno de los valores, es importante tener la estructura de los elementos idéntica para que se puedan asociar correctamente.
 
 
+## Normalización
+
+Delimitar valores de nuestra data original entre 0 y 1.
+
+$$Dataset Normalizado = \frac{FeatureValue - minOfFeatureValues}{maxOfFeatureValues - minOfFeatureValues}$$
+
+
+## Estandarización
+
+Delimitar valores de nuestra data original entre -1 y 1.
+
+
 # Algoritmos
 
 ## K-Nearest Neighbor (knn)
@@ -122,3 +134,29 @@ Debido a varios factores no se obtuvieron los resultados esperados, cuando suced
 - Dividir la data en set de entrenamiento y set de pruebas.
 - Para cada registro de prueba, correr nuestro KNN usando la data de entrenamiento.
 - ¿El resultado de KNN es igual al del registro de prueba?
+
+
+## KNN multidimensional
+
+Debido a que no se han tenido en cuenta muchos parámetros, podemos hacer uso de el teorema de Pitágoras para hacer los cálculos. Para esto, debemos recordar la fórmula $C=\frac{A^2 + B^2}{2}$. Ahora, si necesitamos que sea en 3D nuestro teorema de Pitágoras, podemos tener la fórmula $D=\frac{A^2 + B^2 + C^2}{2}$.
+
+
+## Normalización
+
+| Posición de lanzamiento | Posición normalizada |
+|--|--|
+| 200 | .1 |
+| 150 | 0 |
+| 650 | 1 |
+| 430 | .56 |
+
+Valor mínimo 150, valor máximo 650.
+
+| Redondez | Redondez normalizada |
+|--|--|
+| .55 | 1 |
+| .53 | .6 |
+| .53 | .6 |
+| .5 | 0 |
+
+Valor mínimo .5, valor máximo .55.
