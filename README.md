@@ -31,6 +31,98 @@ $$Dataset Normalizado = \frac{FeatureValue - minOfFeatureValues}{maxOfFeatureVal
 Delimitar valores de nuestra data original entre -1 y 1.
 
 
+# Lodash
+
+| Ventajas | Desventajas |
+|--|--|
+| Proporciona métodos para todo lo que necesitamos | Extremadamente lento (relativo) |
+| Excelente para diseños de APIs | No enfocado en números |
+| Habilidades transferibles a otros proyectos de JavaScript | Algunas cosas son extrañas (obtener una columna de valores) |
+
+
+# Tensorflow JS
+
+| Ventajas | Desventajas |
+|--|--|
+| API similar a Lodash | Sigue en desarrollo (verificar) |
+| Extremadamente rápido para cálculos numéricos |  |
+| Tiene una API para álgebra lineal de bajo nivel y una API de alto nivel para Machine Learning |  |
+| API similar a numpy (librería numérica muy popular en Python) |  |
+
+
+## Tensor
+
+Es esencialmente (en este caso) un objeto de JavaScript que almacena una colección de números, y estos números serán algún tipo de estructura de arreglo.
+
+```javascript
+// Ejemplo 1: 2 dimensiones
+[
+	[300, 0.4, 16, 4],
+	[350, 0.4, 25, 5],
+	[416, 0.4, 16, 4],
+	[722, 0.4, 16, 7]
+]
+
+// Ejemplo 2: 1 dimensión
+[200, 400, 600]
+
+// Ejemplo 3: 3 dimensiones
+[
+	[
+		[5, 10, 17]
+	]
+]
+```
+
+
+## Shape
+
+Básicamente, estamos hablando de una métrica alrededor de un **tensor** o una propiedad de un **tensor** que describe cuántos registros hay o cuántos elementos hay en cada dimensión individual. Imaginemos llamar el método `.length` en cada una de las dimensiones (una sola vez por dimensión) de afuera hacia adentro.
+
+```javascript
+// Ejemplo
+[5, 10, 17].length // Shape: [3]
+
+[
+	[5, 10, 17],
+	[18, 4, 2].length
+].length // Shape: [2, 3]
+
+[
+	[
+		[5, 10, 17].length
+	].length
+].length // Shape: [1, 1, 3]
+```
+
+Los ejercicios en este caso serán de máximo 2 dimensiones, por lo tanto, una forma fácil de recordar cómo calcular el Shape será `[#rows, #columns]`.
+
+
+## Práctica
+
+```javascript
+const data = tf.tensor([1, 2, 3]);
+const otherData = tf.tensor([4, 5, 6]);
+
+// Sumar elementos por columna y fila (no se altera el elemento en paréntesis)
+data.add(otherData);
+
+// Restar elementos por columna y fila
+data.sub(otherData);
+
+// Multiplicar
+data.mul(otherData);
+
+// Dividir
+data.div(otherData);
+
+// Obtener shape
+data.shape;
+```
+
+Debemos tener en cuenta que cuando hacemos operaciones matemáticas entre 2 arreglos de distinto shape, los elementos que no hagan match con ningún elemento del otro arreglo darán como resultado `undefined`.
+
+
 # Algoritmos
 
 ## K-Nearest Neighbor (knn)
@@ -160,3 +252,11 @@ Valor mínimo 150, valor máximo 650.
 | .5 | 0 |
 
 Valor mínimo .5, valor máximo .55.
+
+
+## Plan de migración a Tensorflow JS
+
+- Aprender unas bases fundamentales sobre Tensorflow JS.
+- Hacer algunos ejercicios con Tensorflow.
+- Reconstruir el algoritmo KNN usando Tensorflow.
+- Construir otros algoritmos con Tensorflow.
