@@ -98,6 +98,115 @@ Básicamente, estamos hablando de una métrica alrededor de un **tensor** o una 
 Los ejercicios en este caso serán de máximo 2 dimensiones, por lo tanto, una forma fácil de recordar cómo calcular el Shape será `[#rows, #columns]`.
 
 
+## Broadcasting
+
+El Broadcasting se aplica cuando se toman los shapes de nuestros tensors y de derecha a izquierda los shapes son iguales o 1. Cuando el shape es 1 el elemento se replica para las operaciones de todos los elementos del otro arreglo, por ejemplo $[1, 2, 3] + [4] = [5, 6, 7]$.
+
+```javascript
+// Ejemplo
+const data = tf.tensor([[1, 2, 3], [4, 5, 6]]);
+const otherData = tf.tensor([[1], [1]]);
+
+data.add(otherData); // [[2, 3, 4], [5, 6, 7]]
+```
+
+
+## Slices
+
+Nos permiten sacar la cantidad de datos (por ejemplo una columna) que necesitemos.
+
+|  | 0 | 1 | 2 |
+|--|--|--|--|--
+| 0 | 20 | 30 | 40 |
+| 1 | 50 | 60 | 70 |
+| 2 | 50 | 60 | 70 |
+| 3 | 50 | 60 | 70 |
+| 4 | 50 | 60 | 70 |
+| 5 | 50 | 60 | 70 |
+
+Y los parámetros son:
+
+| Start index |Size |
+|--|--|
+| [0, 1] | [6, 1] |
+
+
+## Concatenation
+
+Cuando queramos juntar 2 tensor lo podemos hacer de la siguiente forma:
+
+```javascript
+const tensorA = tf.tensor([
+	[1, 2, 3],
+	[4, 5, 6]
+]);
+
+const tensorB = tf.tensor([
+	[7, 8, 9],
+	[10, 11, 12]
+]);
+
+tensorA.concat(tensorB);
+
+// Resultado
+[
+	[1, 2, 3],
+	[4, 5, 6],
+	[7, 8, 9],
+	[10, 11, 12]
+];
+
+// Concatenar y que se queden en la misma fila
+tensorA.concat(tensorB, 1); // el segundo parámetro por defecto es 0, y podemos colocar 0 o 1 para indicar en qué sentido queremos que se haga la concatenación
+
+// Resultado
+[
+	[1, 2, 3, 7, 8, 9],
+	[4, 5, 6, 10, 11, 12]
+];
+```
+
+
+## Sum
+
+Permite realizar la suma total de una fila de un tensor, y como segundo parámetro (opcional) podemos indicar si queremos que nos deje sólo el número total (por defecto false), o si queremos mantener nuestro shape.
+
+```javascript
+const jumpData = tf.tensor([
+	[70, 70, 70],
+	[70, 70, 70],
+	[70, 70, 70],
+	[70, 70, 70]
+]);
+
+const playerData = tf.tensor([
+	[1, 160],
+	[2, 160],
+	[3, 160],
+	[4, 160]
+]);
+
+jumpData.sum(1, true).concat(playerData, 1);
+```
+
+
+## ExpandDims
+
+Nos permite agregar dimensiones (de a una) a nuestros tensors.
+
+```javascript
+const jumpData = tf.tensor([
+	[70, 70, 70],
+	[70, 70, 70],
+	[70, 70, 70],
+	[70, 70, 70]
+]);
+
+// Recibe un parámetro opcional para indicar el axis donde queremos que expanda la dimensión
+jumpData.sum(1).expandDims(1).concat(playerData, 1);
+```
+
+
 ## Práctica
 
 ```javascript
@@ -118,9 +227,32 @@ data.div(otherData);
 
 // Obtener shape
 data.shape;
+
+// Imprimir datos
+data.print();
+
+// Imprimir elemento específico (index)
+data.get(0);
+data.get(0, 1); // para 2 dimensiones
+
+// Slice
+const data = tf.tensor([
+	[10, 20, 30],
+  [40, 50, 60],
+  [10, 20, 30],
+  [40, 50, 60],
+  [10, 20, 30],
+  [40, 50, 60],
+  [10, 20, 30],
+  [40, 50, 60]
+]);
+// el -1 permitirá que tensorflow detecte la longitud de los elementos
+data.slice([0, 1], [-1, 1]); // [[20], [50], [20], [50], [20], [50], [20], [50]]
 ```
 
-Debemos tener en cuenta que cuando hacemos operaciones matemáticas entre 2 arreglos de distinto shape, los elementos que no hagan match con ningún elemento del otro arreglo darán como resultado `undefined`.
+Debemos tener en cuenta que cuando hacemos operaciones matemáticas entre 2 arreglos de distinto shape, los elementos que no hagan match con ningún elemento del otro arreglo darán como resultado `undefined`. Sin embargo, aquí entra un término conocido como Broadcasting que va muy de la mano con shapes.
+
+Otra cosa a tener en cuenta es que una vez que se haya creado un tensor, ya no se pueden modificar sus valores, la única forma sería crear un nuevo tensor.
 
 
 # Algoritmos
