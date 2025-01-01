@@ -207,6 +207,22 @@ jumpData.sum(1).expandDims(1).concat(playerData, 1);
 ```
 
 
+## Unstack
+
+Nos permite independizar los tensor para que sólo sean tensors los arreglos más internos dejando todo como un arreglo de JavaScript.
+
+````javascript
+const jumpData = tf.tensor([
+	[70, 70, 70],
+	[70, 70, 70],
+	[70, 70, 70],
+	[70, 70, 70]
+]);
+
+jumpData.unStack()[0]; // [70, 70, 70]
+```
+
+
 ## Práctica
 
 ```javascript
@@ -270,7 +286,7 @@ Este algoritmo se utiliza en el proyecto Plink, digamos que tenemos la siguiente
 5. En cualquiera que sea el bucket en el que más frecuentemente se ingresó, será al que posiblemente caiga la pelota.
 
 
-# Plinko
+# Plinko (clasificación)
 
 Es una app donde se lanza una pelota desde cierta posición y puede caer en un bucket específico.
 
@@ -392,3 +408,92 @@ Valor mínimo .5, valor máximo .55.
 - Hacer algunos ejercicios con Tensorflow.
 - Reconstruir el algoritmo KNN usando Tensorflow.
 - Construir otros algoritmos con Tensorflow.
+
+
+# Determinar el precio de una casa (regresión)
+
+## Algoritmo KNN
+
+- Encontrar la distancia entre las features y el punto de predicción.
+- Ordenar del punto menor al mayor.
+- Tomar los primeros $K$ registros.
+- Porcentaje del valor del label para esos primeros $K$ registros.
+
+
+## Datos relevantes para el problema
+
+| Features | Labels |
+|--|--|
+| Longitud y latitud | Precio de la casa (en miles) |
+
+### Ejemplos
+| Longitud | Latitud | Precio de la casa (en miles) |
+|--|--|--|
+| 84 | 83 | 200 |
+| 84.1 | 85 | 250 |
+| 84.2 | 84 | 234 |
+| 84.3 | 83.5 | 246 |
+| 85 | 83.6 | 243 |
+
+### Punto de predicción
+| Longitud  | Latitud |
+|--|--|
+| 84.2 | 85.2 |
+
+En este caso manejaremos 2 tensors, uno para los features, y otro para los labels, es decir que el primer tensor tendrá la longitud y latitud de las casas, y el segundo tensor su valor en miles.
+
+```javascript
+const tensor1 = tf.tensor([
+	[84, 83],
+	[84.1, 85],
+	[84.2, 84],
+	[84.3, 83.5],
+	[85, 83.6]
+]);
+
+const tensor2 = tf.tensor([
+	[200],
+	[250],
+	[234],
+	[246],
+	[243]
+]);
+```
+
+Para calcular la distancia podemos usar la siguiente fórmula:
+
+$$Distance=\sqrt{(Lat_2 - Lat_1)^2 + (Long_2 - Long_1)^2}$$
+
+Debemos tener en cuenta que si hacemos el cálculo de la distancia y ordenamos los elementos sin haberlos conectado con nuestros labels, básicamente estos labels no harán match con los registros correspondientes, así que hasta no solucionar este problema no podemos hacer el ordenamiento.
+
+```javascript
+const features = tf.tensor([
+	[-121, 47],
+	[-121.2, 46.5],
+	[-122, 46.4],
+	[-120.9, 46.7]
+]);
+
+const labels = tf.tensor([
+	[200],
+	[250],
+	[215],
+	[240]
+]);
+
+const predictionPoint = tf.tensor([-121, 47]);
+const k = 2;
+
+// Encontrar la distancia, concatenar con nuestros labels y ordenar
+features
+	.sub(predictionPoint) // restar longitudes y latitudes con punto de predicción
+	.pow(2) // elevar al cuadrado
+	.sum(1) // sumar elementos en eje vertical
+	.pow(0.5) // raíz cuadrada
+	.expandDims(1) // poner el mismo shape que en nuestros labels
+	.concat(labels, 1) // concatenar con labels
+	.unstack() // disponer de métodos de JavaScript para arreglos
+	.sort((a, b) => a.get(0) - b.get(0)) // ordenar
+	.slice(0, k) // obtener primeros K elementos
+	.reduce((acc, pair) => acc + pair.get(1), 0) / k; // sumar y calcular promedio
+```
